@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="material_mbi_inherit" model="ir.ui.view">
+            <field name="name">mbi.slide.slide.form</field>
+            <field name="model">slide.slide</field>
+            <field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[@name='description']" position="after">
+                    <page name="courses_shared" string="Courses Shared">
+                        <group>
+                            <field name="course_content_shared_ids">
+                                    <tree>
+                                        <field name="id"/>
+                                        <field name="channel_id"/>
+                                        <field name="is_published"/>
+                                        <field name="slide_type"/>
+                                        <field name="completion_time"/>
+
+                                    </tree>
+                            </field>
+                        </group>
+                        <group>
+                             <field name="channels_ids" widget="many2many_tags" string="All Channels" readonly="0"/>
+                        <field name="channel_published_ids" widget="many2many_tags" string="Published Channel" />
+                        </group>
+
+
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+
+
+
+
+
+
+    </data>
+
+
+
+</odoo>

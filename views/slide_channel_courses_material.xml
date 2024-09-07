@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="course_shared_slide_inherit" model="ir.ui.view">
+            <field name="name">mbi.slide.channel.form</field>
+            <field name="model">slide.channel</field>
+            <field name="inherit_id" ref="mbi.course_mbi_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="create_slide_partner_shared" string="Adjust Material" type="object" class="btn btn-primary"/>
+                </xpath>
+
+                <xpath expr="//page[@name='content']" position="after">
+                    <page name="content2" string="Content Shared">
+                        <field name="new_content_ids" string="Content" colspan="4" nolabel="1"
+                               widget="slide_category_one2many" context="{'default_channel_id': active_id,'form_view_ref' : 'mbi.content_shared_form_view'}">
+
+                            <!--                        todo make view tree-->
+                            <tree decoration-bf="is_category">
+                                <field name="sequence" widget="handle"/>
+                                <field name="channel_id" context="{'default_channel_id': active_id}" readonly="1"
+                                       invisible="1"/>
+
+                                <field name="name"/>
+                                <field name="slide_type"/>
+
+                                <field name="completion_time" attrs="{'invisible': [('slide_type', '=', 'category')]}"
+                                       string="Duration" widget="float_time"/>
+                                <field name="total_views"/>
+                                <field name="is_preview" string="Preview" widget="toggle_button"/>
+                                <field name="auto_publish" string="Auto Published" widget="toggle_button"/>
+                                <field name="datetime_publish" attrs="{'invisible':[('auto_publish','=',False)],'required':[('auto_publish','=',True)]}"/>
+                                <field name="is_published" string="Published" widget="toggle_button"/>
+                                <field name="is_category" invisible="1"/>
+
+                                <control>
+                                    <create name="add_slide_section" string="Add Section"
+                                            context="{'default_is_category': True}"/>
+
+                                    <create name="add_slide_lesson" string="Add Content"/>
+                                </control>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+                <xpath expr="//header" position="inside">
+                    <button name="content_to_shared_content" string="Create Shared Material" type="object" class="btn btn-primary"/>
+                </xpath>
+
+
+            </field>
+
+        </record>
+    </data>
+</odoo>

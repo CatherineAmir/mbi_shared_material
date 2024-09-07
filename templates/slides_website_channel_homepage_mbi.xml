@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         <template id="course_main_page" name="Course Home" inherit_id="website_slides.course_main">
+        <xpath expr="//div[hasclass('d-flex')]" position="replace">
+             <div class="d-flex align-items-end justify-content-around h-100">
+                    <div t-if="channel.image_1920" t-field="channel.image_1920" t-options='{"widget": "image", "class": "o_wslides_course_pict d-inline-block mb-2 mt-3 my-md-0"}' class="h-100"/>
+                    <div t-else="" class="h-100">
+                            <img t-att-src="'/mbi/static/src/img/fahseen_elkotb.jpeg'"
+                                class="o_wslides_course_pict d-inline-block mb-2 mt-3 my-md-0"/>
+                                </div>
+                </div>
+
+        </xpath>
+    </template>
+        <template id="course_mbi_card" name="Course MBI Card" inherit_id="website_slides.course_card">
+        <xpath expr="//a[@t-attf-href='/slides/#{slug(channel)}'][1]" position="replace">
+<!--           <a t-attf-href="/slides/#{slug(channel)}" t-title="channel.name">-->
+           <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-title="channel.name">
+            <t t-if="channel.partner_has_new_content" t-call="website_slides.course_card_information"/>
+            <div t-if="channel.image_1024" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url(#{course_image}); background-size: cover; background-position:center"/>
+               <div t-else="" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url('/mbi/static/src/img/fahseen_elkotb.jpeg'); background-size: cover; background-position:center"/>
+<!--            <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">-->
+<!--                <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>-->
+<!--            </div>-->
+        </a>
+        </xpath>
+        <xpath expr="//div[hasclass('card-body')]" position="replace">
+            <div class=" p-3">
+<!--"/slides/#{slug(channel)}"-->
+            <a class="card-title h5 mb-3 o_wslides_desc_truncate_2" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-esc="channel.name"/>
+
+
+                  <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-black-30" style="right:0; bottom: 50px"/>
+
+            <span t-if="not channel.is_published" class="badge badge-danger p-1">Unpublished</span>
+
+                <div class="card-text mt-1">
+                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="channel.description_short"/>
+                <div t-if="channel.tag_ids" class="mt-2 pt-1 o_wslides_desc_truncate_2">
+                    <t t-foreach="channel.tag_ids" t-as="tag">
+                        <t t-if="search_tags">
+                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge #{'badge-primary' if tag in search_tags else 'o_wslides_channel_tag o_tag_color_0'}" t-esc="tag.name"/>
+                        </t>
+                        <t t-else="">
+                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge o_wslides_channel_tag #{'o_tag_color_'+str(tag.color)}" t-esc="tag.name"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+
+
+        </xpath>
+    </template>
+
+         <template id="course_mbi_card" name="Course MBI Card" inherit_id="website_slides.course_card">
+        <xpath expr="//a[@t-attf-href='/slides/#{slug(channel)}'][1]" position="replace">
+<!--           <a t-attf-href="/slides/#{slug(channel)}" t-title="channel.name">-->
+           <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-title="channel.name">
+            <t t-if="channel.partner_has_new_content" t-call="website_slides.course_card_information"/>
+            <div t-if="channel.image_1024" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url(#{course_image}); background-size: cover; background-position:center"/>
+               <div t-else="" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url('/mbi/static/src/img/fahseen_elkotb.jpeg'); background-size: cover; background-position:center"/>
+<!--            <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">-->
+<!--                <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>-->
+<!--            </div>-->
+        </a>
+        </xpath>
+        <xpath expr="//div[hasclass('card-body')]" position="replace">
+            <div class=" p-3">
+
+            <a class="card-title h5 mb-3 o_wslides_desc_truncate_2" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-esc="channel.name"/>
+
+
+                  <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-black-30" style="right:0; bottom: 50px"/>
+
+            <span t-if="not channel.is_published" class="badge badge-danger p-1">Unpublished</span>
+
+                <div class="card-text mt-1">
+                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="channel.description_short"/>
+                <div t-if="channel.tag_ids" class="mt-2 pt-1 o_wslides_desc_truncate_2">
+                    <t t-foreach="channel.tag_ids" t-as="tag">
+                        <t t-if="search_tags">
+                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge #{'badge-primary' if tag in search_tags else 'o_wslides_channel_tag o_tag_color_0'}" t-esc="tag.name"/>
+                        </t>
+                        <t t-else="">
+                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge o_wslides_channel_tag #{'o_tag_color_'+str(tag.color)}" t-esc="tag.name"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+
+
+        </xpath>
+    </template>
+
+         <template id="mbi_course_nav" inherit_id="website_slides.course_nav">
+        <xpath expr="//div[hasclass('o_wslides_course_nav')]" position="replace">
+            <div class="o_wslides_course_nav">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <!-- Desktop Mode -->
+                <nav aria-label="breadcrumb" class="col-md-8 d-none d-md-flex">
+                    <ol class="breadcrumb bg-transparent mb-0 pl-0 py-0">
+                        <li class="breadcrumb-item">
+                            <a t-att-href="'/slides?year_num=%s' % (channel.studying_year.name)">Courses</a>
+                        </li>
+                        <t t-set="breadcrumb_class" t-value="'breadcrumb-item %s' % ('active' if not slide else '')" />
+                        <li t-att-class="'breadcrumb-item %s' % ('active' if not search_category and not search_tag and not search_slide_type and not slide else '')">
+<!--                            <a t-att-href="'/slides/%s' % slug(channel)"><span t-esc="channel.name"/></a>-->
+                            <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}"><span t-esc="channel.name"/></a>
+                        </li>
+                        <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_category" t-if="search_category">
+<!--                            <a t-att-href="'/slides/%s/category/%s' % (slug(channel), slug(search_category))"><span t-esc="search_category.name"/></a>-->
+                            <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/category/#{slug(search_category)}" ><span t-esc="search_category.name"/></a>
+                        </li>
+                        <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_tag" t-if="search_tag">
+<!--                          <a t-att-href="'/slides/%s/tag/%s' % (slug(channel), slug(search_tag))"><span t-esc="search_tag.name"/></a>-->
+
+                          <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/tag/#{slug(search_tag)}" ><span t-esc="search_tag.name"/></a>
+
+                        </li>
+                        <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized">
+<!--                            <a t-att-href="'/slides/%s?search_uncategorized=1' % (slug(channel))">Uncategorized</a>-->
+                            <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}?search_uncategorized=1" >Uncategorized</a>
+                        </li>
+                        <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type">
+<!--                            <a t-att-href="'/slides/%s?slide_type=%s' % (slug(channel), search_slide_type)"><span t-esc="slide_types[search_slide_type]"/></a>-->
+                            <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}??slide_type=#{slug(search_slide_type)}" ><span t-esc="slide_types[search_slide_type]"/></a>
+                        </li>
+                        <li t-if="slide" class="breadcrumb-item active">
+<!--                            <a t-att-href="'/slides/slide/%s' % slug(slide)"><span t-esc="slide.name"/></a>-->
+                            <a t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}"><span t-esc="slide.name"/></a>
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="col-md-4 d-none d-md-flex flex-row align-items-center justify-content-end">
+                    <!-- search -->
+                    <form t-attf-action="/slides/all" role="search" method="get">
+                        <div class="input-group o_wslides_course_nav_search ml-1 position-relative">
+                            <span class="input-group-prepend">
+                                <button class="btn btn-link text-white rounded-0 pr-1" type="submit" aria-label="Search" title="Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            <input type="text" class="form-control border-0 rounded-0 bg-transparent text-white" name="search" placeholder="Search courses"/>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Mobile Mode -->
+                <div class="col d-md-none py-1">
+                    <div class="btn-group w-100 position-relative" role="group" aria-label="Mobile sub-nav">
+                        <div class="btn-group w-100">
+                            <a class="btn bg-black-25 text-white dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Nav</a>
+
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/slides">Home</a>
+                                <t t-set="dropdown_class" t-value="'dropdown-item %s' % ('active' if not slide else '')"/>
+<!--                                <a t-att-class="'dropdown-item %s' % ('active' if not search_category and not search_tag and not search_slide_type else '')" t-att-href="'/slides/%s' % slug(channel)">-->
+                                <a t-att-class="'dropdown-item %s' % ('active' if not search_category and not search_tag and not search_slide_type else '')" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}">
+                                    &#9492;<span class="ml-1" t-esc="channel.name"/>
+                                </a>
+<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_category" t-if="search_category" t-att-href="'/slides/%s/category/%s' % (slug(channel), slug(search_category))">-->
+<!--                                    &#9492;<span class="ml-1" t-esc="search_category.name"/>-->
+<!--                                </a>-->
+                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_category" t-if="search_category" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/category/#{slug(search_category)}">
+                                    &#9492;<span class="ml-1" t-esc="search_category.name"/>
+                                </a>
+<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_tag" t-if="search_tag" t-att-href="'/slides/%s/tag/%s' % (slug(channel), slug(search_tag))">-->
+<!--                                    &#9492;<span class="ml-1" t-esc="search_tag.name"/>-->
+<!--                                </a> -->
+                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_tag" t-if="search_tag" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/tag/#{slug(search_tag)}">
+                                    &#9492;<span class="ml-1" t-esc="search_tag.name"/>
+                                </a>
+
+<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized" t-att-href="'/slides/%s?search_uncategorized=1' % (slug(channel))">-->
+<!--                                    &#9492;<span class="ml-1">Uncategorized</span>-->
+<!--                                </a> -->
+                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}?search_uncategorized=1">
+                                    &#9492;<span class="ml-1">Uncategorized</span>
+                                </a>
+
+
+<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type" t-att-href="'/slides/%s?slide_type=%s' % (slug(channel), search_slide_type)">-->
+<!--                                    &#9492;<span class="ml-1" t-esc="slide_types[search_slide_type]"/>-->
+<!--                                </a>-->
+                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}??slide_type=#{slug(search_slide_type)}" >
+                                    &#9492;<span class="ml-1" t-esc="slide_types[search_slide_type]"/>
+                                </a>
+<!--                                 <a t-if="slide" class="dropdown-item active" t-att-href="'/slides/slide/%s' % (slug(slide))">-->
+<!--                                    &#9492;<span class="ml-1" t-esc="slide.name"/>-->
+<!--                                </a>-->
+                                 <a t-if="slide" class="dropdown-item active" t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}">
+                                    &#9492;<span class="ml-1" t-esc="slide.name"/>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="btn-group ml-1 position-static">
+                            <a class="btn bg-black-25 text-white dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-search"></i></a>
+                            <div class="dropdown-menu dropdown-menu-right w-100" style="right: 10px;">
+<!--                                <form class="px-3" t-attf-action="/slides/#{slug(channel)}" role="search" method="get">-->
+                                <form class="px-3" t-attf-action="/slides/#{slug(channel)}?channel=#{slug(channel)}" role="search" method="get">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="search" placeholder="Search courses"/>
+                                        <span class="input-group-append">
+                                            <button class="btn btn-primary" type="submit" aria-label="Search" title="Search">
+                                                <i class="fa fa-search"/>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </xpath>
+    </template>
+    </data>
+</odoo>
