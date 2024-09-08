@@ -165,7 +165,7 @@
                     </t>
                     <t t-elif="channel.new_content_ids and not channel.slide_ids">
 
-    <!--                    <t t-set="course_id" t-value="channel"/>-->
+
                         <t t-set="content_shared" t-value="channel.new_content_ids.filtered(lambda cont:cont.name==slide)"/>
 
                         <span t-if="content_shared.is_new_content and not channel_progress[slide.id].get('completed')"
@@ -359,6 +359,7 @@
                             </div>
                             <li class="o_wslides_fs_sidebar_list_item pl-0 mb-1" t-if="slide.question_ids and not slide.slide_type == 'quiz'"
                                 t-att-data-id="slide.id"
+                                t-att-data-channel-id="channel.id"
                                 t-att-data-can-access="can_access"
                                 t-att-data-name="slide.name"
                                 t-att-data-type="slide.slide_type"
@@ -387,6 +388,8 @@
                 <t t-set="can_access" t-value="can_access_channel or slide.is_preview"/>
                 <li t-att-class="'o_wslides_fs_sidebar_list_item d-flex align-items-top py-1 %s' % ('active' if slide.id == current_slide.id else '')"
                     t-att-data-id="slide.id"
+                    t-att-data-channel-id="channel.id"
+                    t-att-data-channel-name="channel.name"
                     t-att-data-can-access="can_access"
                     t-att-data-name="slide.name"
                     t-att-data-type="slide.slide_type"

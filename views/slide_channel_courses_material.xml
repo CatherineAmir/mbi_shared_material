@@ -13,10 +13,17 @@
                 <xpath expr="//page[@name='content']" position="after">
                     <page name="content2" string="Content Shared">
                         <field name="new_content_ids" string="Content" colspan="4" nolabel="1"
-                               widget="slide_category_one2many" context="{'default_channel_id': active_id,'form_view_ref' : 'mbi.content_shared_form_view'}">
+                               widget="slide_category_one2many" context="{'default_channel_id': active_id}">
+<!--                            'form_view_ref' : 'mbi.content_shared_form_view'}-->
 
-                            <!--                        todo make view tree-->
-                            <tree decoration-bf="is_category">
+                            <tree editable="bottom" decoration-bf="is_category">
+
+                               <control>
+                                    <create name="add_slide_section" string="Add Section"
+                                            context="{'default_is_category': True}"/>
+
+                                    <create name="add_slide_lesson" string="Add Content"/>
+                                </control>
                                 <field name="sequence" widget="handle"/>
                                 <field name="channel_id" context="{'default_channel_id': active_id}" readonly="1"
                                        invisible="1"/>
@@ -33,12 +40,7 @@
                                 <field name="is_published" string="Published" widget="toggle_button"/>
                                 <field name="is_category" invisible="1"/>
 
-                                <control>
-                                    <create name="add_slide_section" string="Add Section"
-                                            context="{'default_is_category': True}"/>
 
-                                    <create name="add_slide_lesson" string="Add Content"/>
-                                </control>
                             </tree>
                         </field>
                     </page>

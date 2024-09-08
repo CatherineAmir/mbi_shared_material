@@ -4,7 +4,7 @@
 		<record id="content_shared_form_view" model="ir.ui.view">
             <field name="name">mbi.content_shared.form</field>
             <field name="model">mbi.course_content</field>
-
+<!---->
             <field name="arch" type="xml">
                 <form string="Content Material">
                     <sheet>

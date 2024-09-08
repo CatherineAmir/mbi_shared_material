@@ -506,38 +506,64 @@ class WebsiteSlidesShared(WebsiteSlides):
         referrer_url = request.httprequest.headers.get('Referer', '')
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         is_embedded = referrer_url and not bool(base_url in referrer_url) or False
+        print("referrer_url",referrer_url)
+        print("base_url",base_url)
+        print("is_embedded",is_embedded)
+        try:
+            channel=int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
+
+        except:
+            channel=None
         # try accessing slide, and display to corresponding template
         try:
             slide = request.env['slide.slide'].browse(slide_id)
-            channel = request.env['slide.channel'].browse(channel_id)
+            if channel :
+                channel_id = request.env['slide.channel'].sudo().browse(channel)
+
+            else:
+                channel_id = False
+            # print("channel", channel)
             if is_embedded:
                 request.env['slide.embed'].sudo()._add_embed_url(slide.id, referrer_url)
-            values = self._get_slide_detail(slide,)
+            values = self._get_slide_detail(slide,channel_id)
+
             values['page'] = page
             values['is_embedded'] = is_embedded
             self._set_viewed_slide(slide)
+
             return request.render('website_slides.embed_slide', values)
         except AccessError:  # TODO : please, make it clean one day, or find another secure way to detect
             # if the slide can be embedded, and properly display the error message.
             return request.render('website_slides.embed_slide_forbidden', {})
 
     @http.route('/slides/slide/set_completed', website=True, type="json", auth="public")
-    def slide_set_completed(self, slide_id):
-        ## print("slide_set_completed",)
+    def slide_set_completed(self, slide_id,**kw):
+        print("slide_set_completed",slide_id)
+        print("slide_set_completed",kw)
+        referrer_url = request.httprequest.headers.get('Referer', '')
+        print("referrer_url",referrer_url)
+        try:
+            channel = int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
+            channel_id=request.env['slide.channel'].sudo().browse(channel)
+        except AccessError:
+            channel_id=None
         if request.website.is_public_user():
             return {'error': 'public_user'}
         fetch_res = self._fetch_slide(slide_id)
+        print("fetch_res",fetch_res)
         if fetch_res.get('error'):
             return fetch_res
-        self._set_completed_slide(fetch_res['slide'])
+        self._set_completed_slide(fetch_res['slide'],channel_id)
+
         return {
             'channel_completion': fetch_res['slide'].channel_id.completion
         }
 
     @http.route('/slides/slide/<model("slide.slide"):slide>/channel=<model("slide.channel"):channel>/set_completed', website=True, type="http", auth="user")
     def slide_set_completed_and_redirect(self, slide, channel,next_slide_id=None):
-        ## print("slide_set_completed_and_redirect")
-        self._set_completed_slide(slide)
+        print("slide_set_completed_and_redirect",slide,channel)
+
+        self._set_completed_slide(slide,channel)
         next_slide = None
         ## print("channel",channel)
         if next_slide_id:
@@ -558,14 +584,14 @@ class WebsiteSlidesShared(WebsiteSlides):
             slide.check_access_rule('read')
 
         except AccessError as e:
-            print("e",e)
+
             return {'error': 'slide_access'}
-        print("in return slide",slide)
+
         return {'slide': slide}
-    def _set_completed_slide(self, slide):
+    def _set_completed_slide(self, slide,channel):
         # quiz use their specific mechanism to be marked as done
         if slide.slide_type == 'quiz' or slide.question_ids:
             raise UserError(_("Slide with questions must be marked as done when submitting all good answers "))
-        if slide.website_published and slide.channel_id.is_member:
-            slide.action_set_completed()
+        if slide.website_published and slide.channel_id.is_member or channel.is_member:
+            slide.action_set_completed(channel)
         return True

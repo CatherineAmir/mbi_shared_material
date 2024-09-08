@@ -32,11 +32,11 @@ class SlideContentPartnerRelation(models.Model):
             completed._set_completed_callback()
         return res
 
-    def write(self, values):
-        res = super(SlideContentPartnerRelation, self).write(values)
-        if values.get('completed'):
-            self._set_completed_callback()
-        return res
+    # def write(self, values):
+    #     res = super(SlideContentPartnerRelation, self).write(values)
+    #     if values.get('completed'):
+    #         self._set_completed_callback()
+    #     return res
 
 
     @api.depends('content_id')
@@ -81,13 +81,23 @@ class SlideSlide(models.Model):
                 ## print("channel_published_ids",r.channel_published_ids)
                 r.channels_ids=r.course_content_shared_ids.mapped('channel_id').ids
 
-    def action_set_completed(self):
-        if any(not slide.channel_id.is_member for slide in self):
-            raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
+    def action_set_completed(self,channel=None):
+        print("in action_set_completed")
+        if channel:
+            print("channel",channel)
+            if not channel.is_member:
+                raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
 
+        else:
+
+            if any(not slide.channel_id.is_member for slide in self):
+                print("error in set complete")
+                raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
+        print("in action_set_completed no error")
         return self._action_set_completed(self.env.user.partner_id)
 
     def _action_set_completed(self, target_partner):
+
         self_sudo = self.sudo()
         SlidePartnerSudo = self.env['slide.slide.partner'].sudo()
         existing_sudo = SlidePartnerSudo.search([
@@ -95,7 +105,7 @@ class SlideSlide(models.Model):
             ('partner_id', '=', target_partner.id)
         ])
         existing_sudo.write({'completed': True})
-        ## print("existing_sudo",existing_sudo)
+        print("existing_sudo",existing_sudo)
         new_slides = self_sudo - existing_sudo.mapped('slide_id')
         created=SlidePartnerSudo.create([{
             'slide_id': new_slide.id,
@@ -103,7 +113,7 @@ class SlideSlide(models.Model):
             'partner_id': target_partner.id,
             'vote': 0,
             'completed': True} for new_slide in new_slides])
-        ## print("created",created)
+        print("created",created)
         return True
 
 
@@ -177,25 +187,32 @@ class CourseContent(models.Model):
             ('is_published','=',False),
             ('auto_publish','=',True),
             ("datetime_publish",'!=',False),
-            ("datetime_publish",'<=',this_time())
+            ("datetime_publish",'<=',this_time(),),
+            ("is_category","=",False)
         ]
         content_published=ContentMaterialSUDO.sudo().search(domain)
-        ## print("content_published",content_published)
+        print("content_published",content_published)
         for c in content_published:
             print("c.name",c.name)
-            c.name.is_published=True
+            # c.name.is_published=True
             c.is_published=True
+            print("c:",c)
+            print("c:",c.name)
             if c.channel_id:
-                c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
+                try:
+                    print("message _post")
+                    # c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
 
+                    print("message _posted")
+                except Exception as e:
+                    print("exception in message post",e)
 
-
-    @api.model
-    def create(self,vals):
-
-        obj=super(CourseContent,self).create(vals)
-        obj.channel_id.create_slide_partner_shared()
-        return obj
+    # @api.model
+    # def create(self,vals):
+    #
+    #     obj=super(CourseContent,self).create(vals)
+    #     obj.channel_id.create_slide_partner_shared()
+    #     return obj
 
 
     @api.depends('slide_partner_ids.content_id')
@@ -291,38 +308,11 @@ class CourseContent(models.Model):
         ])
 
         for record in self:
-            record.user_membership_id = next(
-                (slide_partner for slide_partner in slide_partners if slide_partner.conetnt_id == record),
+            record.user_vote = next(
+                (slide_partner for slide_partner in slide_partners if slide_partner.content_id == record),
                 self.env['slide.slide.partner']
             )
-            record.user_vote = record.user_membership_id.vote
-    # not sure to be needed
-    # @api.depends('document_id', 'slide_type', 'mime_type')
-    # def _compute_embed_code(self):
-    #     base_url = request and request.httprequest.url_root or self.env['ir.config_parameter'].sudo().get_param(
-    #         'web.base.url')
-    #     if base_url[-1] == '/':
-    #         base_url = base_url[:-1]
-    #     for record in self:
-    #         if record.datas and (not record.document_id or record.slide_type in ['document', 'presentation']):
-    #             slide_url = base_url + url_for('/slides/embed/%s?page=1' % record.id)
-    #             record.embed_code = '<iframe src="%s" class="o_wslides_iframe_viewer" allowFullScreen="true" height="%s" width="%s" frameborder="0"></iframe>' % (
-    #             slide_url, 315, 420)
-    #         elif record.slide_type == 'video' and record.document_id:
-    #             if not record.mime_type:
-    #                 # embed youtube video
-    #                 query = urls.url_parse(record.url).query
-    #                 query = query + '&theme=light' if query else 'theme=light'
-    #                 record.embed_code = '<iframe src="//www.youtube-nocookie.com/embed/%s?%s" allowFullScreen="true" frameborder="0"></iframe>' % (
-    #                 record.document_id, query)
-    #             else:
-    #                 # embed google doc video
-    #                 record.embed_code = '<iframe src="//drive.google.com/file/d/%s/preview" allowFullScreen="true" frameborder="0"></iframe>' % (
-    #                     record.document_id)
-    #         else:
-    #             record.embed_code = False
-
-
+            # record.user_vote = record.user_vote.vote
 
 
 
@@ -398,8 +388,9 @@ class CourseContent(models.Model):
 
         content = super(CourseContent, self).create(values)
 
-        if content.is_published and not content.is_category:
-            content._post_publication()
+        # if content.is_published and not content.is_category:
+            # content._post_publication()
+        content.channel_id.create_slide_partner_shared()
         return content
 
     def write(self, values):
@@ -413,14 +404,17 @@ class CourseContent(models.Model):
 
         res = super(CourseContent, self).write(values)
         print("herewrite",res)
+        if values.get('completed'):
+            self._set_completed_callback()
         if values.get('is_published'):
             self.date_published = datetime.now()
-            self._post_publication()
-        ## print("slide_partner_ids",self.slide_partner_ids)
+            # self._post_publication()
+        print("slide_partner_ids",self.slide_partner_ids)
         if 'is_published' in values or 'active' in values:
             # if the slide is published/unpublished, recompute the completion for the partners
+            print("self.slide_partner_ids",self.slide_partner_ids)
             self.slide_partner_ids._set_completed_callback()
-
+        print("before return res",res)
         return res
 
     def _post_publication(self):
