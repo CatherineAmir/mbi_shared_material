@@ -6,6 +6,7 @@
             <field name="name">Slide2: public/portal/user: restricted to published or uploaded by user, and either
                 channel member or public channel &amp; (category or previewable)
             </field>
+                  <field name="model_id" ref="model_slide_slide"/>
 
             <field name="groups"
                    eval="[(4, ref('base.group_public')), (4, ref('base.group_portal')), (4, ref('base.group_user'))]"/>
