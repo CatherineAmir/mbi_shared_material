@@ -282,26 +282,25 @@
                   <li class="o_wslides_fs_sidebar_section py-2 px-3">
         <a t-if="category" class="text-uppercase text-500 py-1 small d-block" t-attf-id="category-collapse-#{category.id if category else 0}" data-toggle="collapse" role="button" aria-expanded="true" t-att-href="('#collapse-%s') % (category.id if category else 0)" t-attf-aria-controls="collapse-#{category.id if category else 0}">
             <b t-field="category.name"/>
-<!--            <b t-field="category.name"/>-->
+
         </a>
         <ul class="o_wslides_fs_sidebar_section_slides collapse show position-relative px-0 pb-1 my-0 mx-n3" t-att-id="('collapse-%s') % (category.id if category else 0)">
             <t t-set="is_member" t-value="current_slide.channel_id.is_member or channel.is_member"  />
             <t t-set="can_access_channel" t-value="is_member or current_slide.channel_id.can_publish or channel.can_publish"/>
-            <span> can access</span>
-            <t t-esc="can_access_channel"/>
+
+
             <t t-foreach="slides" t-as="slide">
                 <t t-if="len(slide.course_content_shared_ids)">
 
 
                     <t t-if="channel.id in slide.channel_published_ids.ids and slide.id in channel_progress">
                         <input name="channel" t-att-value="channel" type="hidden"/>
-<!--                        <t t-esc="channel.name"/>-->
-<!--                          <t t-esc="slide.id"/>-->
+
                      <t t-set="slide_completed" t-value="channel_progress[slide.id].get('completed')"/>
                 <t t-set="can_access" t-value="can_access_channel or slide.is_preview"/>
-<!--                 t-att-data-course-id="channel.id"&ndash;&gt;-->
-<!--                    t-att-data-course-name="channel.name"-->
-<!--                    t-att-data-course-slug="slug(channel)"-->
+
+
+
                 <li t-att-class="'o_wslides_fs_sidebar_list_item d-flex align-items-top py-1 %s' % ('active' if slide.id == current_slide.id else '')"
                     t-att-data-id="slide.id"
                     t-att-data-course-id="channel.id"
@@ -496,7 +495,7 @@
                     <a class="d-flex align-items-center px-3 o_wslides_fs_exit_fullscreen" t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}">
                         <i class="fa fa-sign-out"/><span class="d-none d-md-inline-block ml-1">Exit Fullscreen</span>
                     </a>
-<!--                    <a class="d-flex align-items-center px-3" t-attf-href="/slides/#{slug(channel)}">-->
+
                     <a class="d-flex align-items-center px-3" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}">
                         <i class="fa fa-home"/><span class="d-none d-md-inline-block ml-1">Back to course</span>
                     </a>
@@ -511,8 +510,8 @@
                 <div class="o_wslides_fs_sidebar o_wslides_fs_sidebar_hidden text-white flex-shrink-0 order-1">
                     <div class="o_wslides_fs_sidebar_content d-flex flex-column px-3 pt-3 h-100">
                         <div class="o_wslides_fs_sidebar_header mb-3">
-<!--                            <a class="h5 d-block mb-1" t-attf-href="/slides/#{slug(channel)}">-->
-                            <a class="h5 d-block mb-1" t-attf-href="/slides/#{slug(channel)}/channel=#{slug(channel)}">
+
+                            <a class="h5 d-block mb-1" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}">
                                 <span t-field="channel.name"/>
                             </a>
                             <div t-if="not is_public_user" class="d-flex align-items-center">

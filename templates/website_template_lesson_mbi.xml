@@ -8,6 +8,7 @@
            <div id="wrap" class="wrap o_wslides_wrap">
             <div class="o_wslides_lesson_header o_wslides_gradient position-relative text-white pb-0 pt-2 pt-md-5">
                  <t t-set="channel" t-value="channel"/>
+<!--                <t t-esc="channel"/>-->
 
                 <t t-call="website_slides.course_nav">
 
@@ -25,8 +26,8 @@
                                 <a t-att-href="'/slides/%s' % (slug(channel))" class="text-white text-decoration-none" t-field="channel.name"/>
                                 <t t-if="channel.completed">
                                     <small><span class="badge badge-pill badge-success pull-right my-1 py-1 px-2 font-weight-normal"><i class="fa fa-check"/> Completed</span></small>
-<!--                                    <t t-esc="channel.name"/>-->
-<!--                                    <t t-esc="slug(channel)"/>-->
+                                    <t t-esc="channel.name"/>
+                                    <t t-esc="slug(channel)"/>
                                 </t>
                             </h2>
 

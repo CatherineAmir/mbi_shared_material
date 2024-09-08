@@ -26,12 +26,18 @@
     'data': [
         'security/ir.model.access.csv',
         'security/record_rules.xml',
+
         'views/front_end_assets.xml',
         'views/content_material.xml',
         'views/slide_channel_courses_material.xml',
-        'templates/shared_material.xml',
         'views/slide_slide.xml',
         'views/cron_job.xml',
+
+        'templates/shared_material.xml',
+        'templates/website_template_lesson_mbi.xml',
+        'templates/slides_website_channel_homepage_mbi.xml',
+
+
 
 
     ],

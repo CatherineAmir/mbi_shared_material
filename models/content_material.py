@@ -182,9 +182,11 @@ class CourseContent(models.Model):
         content_published=ContentMaterialSUDO.sudo().search(domain)
         ## print("content_published",content_published)
         for c in content_published:
+            print("c.name",c.name)
             c.name.is_published=True
             c.is_published=True
-            c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
+            if c.channel_id:
+                c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
 
 
 

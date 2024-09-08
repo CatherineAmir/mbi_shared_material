@@ -495,7 +495,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         return values
     # tOdo
     # channel_id to be added for get_slide_detail
-    @http.route('/slides/embed/<int:slide_id>/<int:channel_id>', type='http', auth='public', website=True, sitemap=False)
+    @http.route('/slides/embed/<int:slide_id>', type='http', auth='public', website=True, sitemap=False)
     def slides_embed(self, slide_id,channel_id=None ,page="1", **kw):
         # Note : don't use the 'model' in the route (use 'slide_id'), otherwise if public cannot access the embedded
         # slide, the error will be the website.403 page instead of the one of the website_slides.embed_slide.
@@ -542,6 +542,8 @@ class WebsiteSlidesShared(WebsiteSlides):
         ## print("channel",channel)
         if next_slide_id:
             next_slide = self._fetch_slide(next_slide_id).get('slide', None)
+        print("here in redirect",next_slide)
+        print("redirect","/slides/slide/%s/channel=%s" % (slug(next_slide) if next_slide else slug(slide),slug(channel)))
         return werkzeug.utils.redirect("/slides/slide/%s/channel=%s" % (slug(next_slide) if next_slide else slug(slide),slug(channel)))
 
     def _fetch_slide(self, slide_id):
@@ -558,6 +560,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         except AccessError as e:
             print("e",e)
             return {'error': 'slide_access'}
+        print("in return slide",slide)
         return {'slide': slide}
     def _set_completed_slide(self, slide):
         # quiz use their specific mechanism to be marked as done

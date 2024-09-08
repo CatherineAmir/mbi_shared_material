@@ -27,47 +27,6 @@
         </xpath>
         <xpath expr="//div[hasclass('card-body')]" position="replace">
             <div class=" p-3">
-<!--"/slides/#{slug(channel)}"-->
-            <a class="card-title h5 mb-3 o_wslides_desc_truncate_2" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-esc="channel.name"/>
-
-
-                  <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-black-30" style="right:0; bottom: 50px"/>
-
-            <span t-if="not channel.is_published" class="badge badge-danger p-1">Unpublished</span>
-
-                <div class="card-text mt-1">
-                <div class="font-weight-light o_wslides_desc_truncate_3" t-field="channel.description_short"/>
-                <div t-if="channel.tag_ids" class="mt-2 pt-1 o_wslides_desc_truncate_2">
-                    <t t-foreach="channel.tag_ids" t-as="tag">
-                        <t t-if="search_tags">
-                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge #{'badge-primary' if tag in search_tags else 'o_wslides_channel_tag o_tag_color_0'}" t-esc="tag.name"/>
-                        </t>
-                        <t t-else="">
-                            <a t-att-href="'/slides/all?%s' % keep_query('*', tags=str((tag | search_tags).ids))" t-attf-class="badge o_wslides_channel_tag #{'o_tag_color_'+str(tag.color)}" t-esc="tag.name"/>
-                        </t>
-                    </t>
-                </div>
-            </div>
-        </div>
-
-
-        </xpath>
-    </template>
-
-         <template id="course_mbi_card" name="Course MBI Card" inherit_id="website_slides.course_card">
-        <xpath expr="//a[@t-attf-href='/slides/#{slug(channel)}'][1]" position="replace">
-<!--           <a t-attf-href="/slides/#{slug(channel)}" t-title="channel.name">-->
-           <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-title="channel.name">
-            <t t-if="channel.partner_has_new_content" t-call="website_slides.course_card_information"/>
-            <div t-if="channel.image_1024" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url(#{course_image}); background-size: cover; background-position:center"/>
-               <div t-else="" class="card-img-top" t-attf-style="padding-top: 100%; background-image: url('/mbi/static/src/img/fahseen_elkotb.jpeg'); background-size: cover; background-position:center"/>
-<!--            <div t-else="" class="o_wslides_gradient card-img-top position-relative" style="padding-top: 50%; opacity: 0.8">-->
-<!--                <i class="fa fa-graduation-cap fa-2x mr-3 mb-3 position-absolute text-white-75" style="right:0; bottom: 0"/>-->
-<!--            </div>-->
-        </a>
-        </xpath>
-        <xpath expr="//div[hasclass('card-body')]" position="replace">
-            <div class=" p-3">
 
             <a class="card-title h5 mb-3 o_wslides_desc_truncate_2" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}" t-esc="channel.name"/>
 
@@ -94,6 +53,8 @@
 
         </xpath>
     </template>
+
+
 
          <template id="mbi_course_nav" inherit_id="website_slides.course_nav">
         <xpath expr="//div[hasclass('o_wslides_course_nav')]" position="replace">
