@@ -197,3 +197,6 @@ class CourseMatrialShared(models.Model):
                 channel.slide_content_ids = channel.new_content_ids.filtered(lambda x:x.is_published).mapped('name').filtered(lambda  slide:not slide.is_category and slide.is_published)
 
                 # print("in new _compute_category_and_slide_ids", channel.slide_content_ids)
+
+
+
