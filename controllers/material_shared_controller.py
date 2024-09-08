@@ -24,7 +24,7 @@ class WebsiteSlidesShared(WebsiteSlides):
 
 
     def sitemap_slide(env, rule, qs):
-        print("hereee sitemap_slide")
+        # print("hereee sitemap_slide")
         Channel = env['slide.channel']
         dom = sitemap_qs2dom(qs=qs, route='/slides/', field=Channel._rec_name)
         dom += env['website'].get_current_website().website_domain()
@@ -323,9 +323,9 @@ class WebsiteSlidesShared(WebsiteSlides):
                     'name': module.shortdesc,
                     'motivational': _('Evaluate and certify your students.'),
                 }]
-        print("values before prepare additional values the end",values)
+        # print("values before prepare additional values the end",values)
         values = self._prepare_additional_channel_values(values, **kw)
-        print("values  after", values)
+        # print("values  after", values)
         return request.render('website_slides.course_main', values)
 
     # SLIDE.CHANNEL UTILS
@@ -339,13 +339,13 @@ class WebsiteSlidesShared(WebsiteSlides):
                   type='http', auth="public", website=True,methods=["GET"],
                 sitemap=True)
     def slide_view(self, slide ,**kwargs):
-        print("in slide view custom",slide,kwargs)
+        # print("in slide view custom",slide,kwargs)
 
         if "channel" in kwargs:
             # channel=int(kwargs['channel'].split('-')[1])
             # channel_id=request.env['slide.channel'].sudo().search([("id",'=',channel)])
             channel_id=kwargs['channel']
-            print("channel_id in slide_view",channel_id)
+            # print("channel_id in slide_view",channel_id)
         else:
             channel_id=slide.channel_id
 
@@ -362,13 +362,13 @@ class WebsiteSlidesShared(WebsiteSlides):
 
 
         values = self._get_slide_detail(slide,channel_id=channel_id)
-        print("values1 set slide detail", values)
+        # print("values1 set slide detail", values)
         # quiz-specific: update with karma and quiz information
         if slide.question_ids:
             values.update(self._get_slide_quiz_data(slide))
         # sidebar: update with user channel progress
         values['channel_progress'] = self._get_channel_progress(channel_id, include_quiz=True)
-        print("values of progress",values)
+        # print("values of progress",values)
         # Allows to have breadcrumb for the previously used filter
         values.update({
             'search_category': slide.category_id if kwargs.get('search_category') else None,
@@ -398,10 +398,10 @@ class WebsiteSlidesShared(WebsiteSlides):
 
 # TODO
     def _get_slide_detail(self, slide,channel_id=None):
-        print("in get slide detail",slide,channel_id)
+        # print("in get slide detail",slide,channel_id)
         if len(slide.course_content_shared_ids) and  channel_id:
             channel_id=channel_id
-            print("channel_id in if",channel_id)
+            # print("channel_id in if",channel_id)
             base_domain = self._get_channel_slides_base_domain(channel_id)
             if len(base_domain) == 5:
                 base_domain.insert(-3, "|")
@@ -452,25 +452,9 @@ class WebsiteSlidesShared(WebsiteSlides):
         previous_slide = channel_id.slide_content_ids[slide_index - 1] if slide_index > 0 else None
         next_slide = channel_id.slide_content_ids[slide_index + 1] if slide_index < len(
             channel_slides_ids) - 1  else None
-        ## print("previous_slide",previous_slide)
-        ## print("next_slide",next_slide)
-    # else:
-    #
-    #     print("channel_id in get slide details",channel_id)
-    #
-    #     channel_content_ids=channel_id.new_content_ids.filtered(lambda x:x.is_published)
-    #     channel_slides = channel_content_ids.mapped("name")
-    #     # if channel_slides:
-    #     channel_slides_ids=channel_slides.ids
-    #     print("channel_slides_ids",channel_content_ids)
-    #     print("channel_slides_ids", channel_slides)
-    #     slide_index = channel_slides_ids.index(slide.id)
-    #     previous_slide = channel_slides[slide_index - 1] if slide_index > 0 else None
-    #     next_slide =channel_slides[slide_index + 1] if slide_index < len(
-    #                 channel_slides_ids) - 1  else None
 
         values = {
-            # slide
+
             'slide': slide,
             'main_object': slide,
             'most_viewed_slides': most_viewed_slides,
@@ -500,15 +484,15 @@ class WebsiteSlidesShared(WebsiteSlides):
         # Note : don't use the 'model' in the route (use 'slide_id'), otherwise if public cannot access the embedded
         # slide, the error will be the website.403 page instead of the one of the website_slides.embed_slide.
         # Do not forget the rendering here will be displayed in the embedded iframe
-        print("channel_id", channel_id)
-        print("kw", kw)
+        # print("channel_id", channel_id)
+        # print("kw", kw)
         # determine if it is embedded from external web page
         referrer_url = request.httprequest.headers.get('Referer', '')
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         is_embedded = referrer_url and not bool(base_url in referrer_url) or False
-        print("referrer_url",referrer_url)
-        print("base_url",base_url)
-        print("is_embedded",is_embedded)
+        # print("referrer_url",referrer_url)
+        # print("base_url",base_url)
+        # print("is_embedded",is_embedded)
         try:
             channel=int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
 
@@ -538,10 +522,10 @@ class WebsiteSlidesShared(WebsiteSlides):
 
     @http.route('/slides/slide/set_completed', website=True, type="json", auth="public")
     def slide_set_completed(self, slide_id,**kw):
-        print("slide_set_completed",slide_id)
-        print("slide_set_completed",kw)
+        # print("slide_set_completed",slide_id)
+        # print("slide_set_completed",kw)
         referrer_url = request.httprequest.headers.get('Referer', '')
-        print("referrer_url",referrer_url)
+        # print("referrer_url",referrer_url)
         try:
             channel = int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
             channel_id=request.env['slide.channel'].sudo().browse(channel)
@@ -550,7 +534,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         if request.website.is_public_user():
             return {'error': 'public_user'}
         fetch_res = self._fetch_slide(slide_id)
-        print("fetch_res",fetch_res)
+        # print("fetch_res",fetch_res)
         if fetch_res.get('error'):
             return fetch_res
         self._set_completed_slide(fetch_res['slide'],channel_id)
@@ -561,25 +545,25 @@ class WebsiteSlidesShared(WebsiteSlides):
 
     @http.route('/slides/slide/<model("slide.slide"):slide>/channel=<model("slide.channel"):channel>/set_completed', website=True, type="http", auth="user")
     def slide_set_completed_and_redirect(self, slide, channel,next_slide_id=None):
-        print("slide_set_completed_and_redirect",slide,channel)
+        # print("slide_set_completed_and_redirect",slide,channel)
 
         self._set_completed_slide(slide,channel)
         next_slide = None
         ## print("channel",channel)
         if next_slide_id:
             next_slide = self._fetch_slide(next_slide_id).get('slide', None)
-        print("here in redirect",next_slide)
-        print("redirect","/slides/slide/%s/channel=%s" % (slug(next_slide) if next_slide else slug(slide),slug(channel)))
+        # print("here in redirect",next_slide)
+        # print("redirect","/slides/slide/%s/channel=%s" % (slug(next_slide) if next_slide else slug(slide),slug(channel)))
         return werkzeug.utils.redirect("/slides/slide/%s/channel=%s" % (slug(next_slide) if next_slide else slug(slide),slug(channel)))
 
     def _fetch_slide(self, slide_id):
         # print("in fetch_slide", slide_id)
         slide = request.env['slide.slide'].browse(int(slide_id)).exists()
         if not slide:
-            print("here no slidde")
+            # print("here no slidde")
             return {'error': 'slide_wrong'}
         try:
-            print("in try read")
+            # print("in try read")
             slide.check_access_rights('read')
             slide.check_access_rule('read')
 

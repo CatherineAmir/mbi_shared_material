@@ -82,18 +82,18 @@ class SlideSlide(models.Model):
                 r.channels_ids=r.course_content_shared_ids.mapped('channel_id').ids
 
     def action_set_completed(self,channel=None):
-        print("in action_set_completed")
+        # print("in action_set_completed")
         if channel:
-            print("channel",channel)
+            # print("channel",channel)
             if not channel.is_member:
                 raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
 
         else:
 
             if any(not slide.channel_id.is_member for slide in self):
-                print("error in set complete")
+                # print("error in set complete")
                 raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
-        print("in action_set_completed no error")
+        # print("in action_set_completed no error")
         return self._action_set_completed(self.env.user.partner_id)
 
     def _action_set_completed(self, target_partner):
@@ -105,7 +105,7 @@ class SlideSlide(models.Model):
             ('partner_id', '=', target_partner.id)
         ])
         existing_sudo.write({'completed': True})
-        print("existing_sudo",existing_sudo)
+        # print("existing_sudo",existing_sudo)
         new_slides = self_sudo - existing_sudo.mapped('slide_id')
         created=SlidePartnerSudo.create([{
             'slide_id': new_slide.id,
@@ -113,7 +113,7 @@ class SlideSlide(models.Model):
             'partner_id': target_partner.id,
             'vote': 0,
             'completed': True} for new_slide in new_slides])
-        print("created",created)
+        # print("created",created)
         return True
 
 
@@ -191,28 +191,23 @@ class CourseContent(models.Model):
             ("is_category","=",False)
         ]
         content_published=ContentMaterialSUDO.sudo().search(domain)
-        print("content_published",content_published)
+        # print("content_published",content_published)
         for c in content_published:
             print("c.name",c.name)
             # c.name.is_published=True
             c.is_published=True
-            print("c:",c)
-            print("c:",c.name)
+
+
             if c.channel_id:
                 try:
-                    print("message _post")
-                    # c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
+                    # print("message _post")
+                    c.channel_id.message_post(body="{} Marterial is Published at {}".format(c.name.name,str(this_time())))
 
-                    print("message _posted")
+                    # print("message _posted")
                 except Exception as e:
-                    print("exception in message post",e)
+                    pass
+                    # print("exception in message post",e)
 
-    # @api.model
-    # def create(self,vals):
-    #
-    #     obj=super(CourseContent,self).create(vals)
-    #     obj.channel_id.create_slide_partner_shared()
-    #     return obj
 
 
     @api.depends('slide_partner_ids.content_id')
@@ -312,7 +307,7 @@ class CourseContent(models.Model):
                 (slide_partner for slide_partner in slide_partners if slide_partner.content_id == record),
                 self.env['slide.slide.partner']
             )
-            # record.user_vote = record.user_vote.vote
+
 
 
 
@@ -403,18 +398,18 @@ class CourseContent(models.Model):
             values['is_published'] = True
 
         res = super(CourseContent, self).write(values)
-        print("herewrite",res)
+
         if values.get('completed'):
             self._set_completed_callback()
         if values.get('is_published'):
             self.date_published = datetime.now()
             # self._post_publication()
-        print("slide_partner_ids",self.slide_partner_ids)
+
         if 'is_published' in values or 'active' in values:
             # if the slide is published/unpublished, recompute the completion for the partners
-            print("self.slide_partner_ids",self.slide_partner_ids)
+
             self.slide_partner_ids._set_completed_callback()
-        print("before return res",res)
+
         return res
 
     def _post_publication(self):
