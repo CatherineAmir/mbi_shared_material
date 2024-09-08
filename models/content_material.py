@@ -96,7 +96,15 @@ class SlideSlide(models.Model):
         # print("in action_set_completed no error")
         return self._action_set_completed(self.env.user.partner_id)
 
+    def _has_additional_resources(self):
+        """Sudo required for public user to know if the course has additional
+        resources that they will be able to access once a member."""
+        self.ensure_one()
+        return bool(self.sudo().slide_resource_ids)
+
+
     def _action_set_completed(self, target_partner):
+
 
         self_sudo = self.sudo()
         SlidePartnerSudo = self.env['slide.slide.partner'].sudo()
@@ -193,7 +201,7 @@ class CourseContent(models.Model):
         content_published=ContentMaterialSUDO.sudo().search(domain)
         # print("content_published",content_published)
         for c in content_published:
-            print("c.name",c.name)
+            # print("c.name",c.name)
             # c.name.is_published=True
             c.is_published=True
 
