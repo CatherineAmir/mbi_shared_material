@@ -69,29 +69,29 @@
                         </li>
                         <t t-set="breadcrumb_class" t-value="'breadcrumb-item %s' % ('active' if not slide else '')" />
                         <li t-att-class="'breadcrumb-item %s' % ('active' if not search_category and not search_tag and not search_slide_type and not slide else '')">
-<!--                            <a t-att-href="'/slides/%s' % slug(channel)"><span t-esc="channel.name"/></a>-->
+
                             <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}"><span t-esc="channel.name"/></a>
                         </li>
                         <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_category" t-if="search_category">
-<!--                            <a t-att-href="'/slides/%s/category/%s' % (slug(channel), slug(search_category))"><span t-esc="search_category.name"/></a>-->
+
                             <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/category/#{slug(search_category)}" ><span t-esc="search_category.name"/></a>
                         </li>
                         <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_tag" t-if="search_tag">
-<!--                          <a t-att-href="'/slides/%s/tag/%s' % (slug(channel), slug(search_tag))"><span t-esc="search_tag.name"/></a>-->
+
 
                           <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/tag/#{slug(search_tag)}" ><span t-esc="search_tag.name"/></a>
 
                         </li>
                         <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized">
-<!--                            <a t-att-href="'/slides/%s?search_uncategorized=1' % (slug(channel))">Uncategorized</a>-->
+
                             <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}?search_uncategorized=1" >Uncategorized</a>
                         </li>
                         <li t-att-class="breadcrumb_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type">
-<!--                            <a t-att-href="'/slides/%s?slide_type=%s' % (slug(channel), search_slide_type)"><span t-esc="slide_types[search_slide_type]"/></a>-->
+
                             <a t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}??slide_type=#{slug(search_slide_type)}" ><span t-esc="slide_types[search_slide_type]"/></a>
                         </li>
                         <li t-if="slide" class="breadcrumb-item active">
-<!--                            <a t-att-href="'/slides/slide/%s' % slug(slide)"><span t-esc="slide.name"/></a>-->
+
                             <a t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}"><span t-esc="slide.name"/></a>
                         </li>
                     </ol>
@@ -120,40 +120,38 @@
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="/slides">Home</a>
                                 <t t-set="dropdown_class" t-value="'dropdown-item %s' % ('active' if not slide else '')"/>
-<!--                                <a t-att-class="'dropdown-item %s' % ('active' if not search_category and not search_tag and not search_slide_type else '')" t-att-href="'/slides/%s' % slug(channel)">-->
+
                                 <a t-att-class="'dropdown-item %s' % ('active' if not search_category and not search_tag and not search_slide_type else '')" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}">
                                     &#9492;<span class="ml-1" t-esc="channel.name"/>
                                 </a>
-<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_category" t-if="search_category" t-att-href="'/slides/%s/category/%s' % (slug(channel), slug(search_category))">-->
-<!--                                    &#9492;<span class="ml-1" t-esc="search_category.name"/>-->
-<!--                                </a>-->
+
                                 <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_category" t-if="search_category" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/category/#{slug(search_category)}">
                                     &#9492;<span class="ml-1" t-esc="search_category.name"/>
                                 </a>
-<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_tag" t-if="search_tag" t-att-href="'/slides/%s/tag/%s' % (slug(channel), slug(search_tag))">-->
-<!--                                    &#9492;<span class="ml-1" t-esc="search_tag.name"/>-->
-<!--                                </a> -->
+
+
+
                                 <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_tag" t-if="search_tag" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}/tag/#{slug(search_tag)}">
                                     &#9492;<span class="ml-1" t-esc="search_tag.name"/>
                                 </a>
 
-<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized" t-att-href="'/slides/%s?search_uncategorized=1' % (slug(channel))">-->
-<!--                                    &#9492;<span class="ml-1">Uncategorized</span>-->
-<!--                                </a> -->
+
+
+
                                 <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_uncategorized" t-if="search_uncategorized" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}?search_uncategorized=1">
                                     &#9492;<span class="ml-1">Uncategorized</span>
                                 </a>
 
 
-<!--                                <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type" t-att-href="'/slides/%s?slide_type=%s' % (slug(channel), search_slide_type)">-->
-<!--                                    &#9492;<span class="ml-1" t-esc="slide_types[search_slide_type]"/>-->
-<!--                                </a>-->
+
+
+
                                 <a t-att-class="dropdown_class" t-att-aria-current="'page' and search_slide_type" t-if="search_slide_type" t-attf-href="/slides/#{slug(channel)}?channel=#{slug(channel)}??slide_type=#{slug(search_slide_type)}" >
                                     &#9492;<span class="ml-1" t-esc="slide_types[search_slide_type]"/>
                                 </a>
-<!--                                 <a t-if="slide" class="dropdown-item active" t-att-href="'/slides/slide/%s' % (slug(slide))">-->
-<!--                                    &#9492;<span class="ml-1" t-esc="slide.name"/>-->
-<!--                                </a>-->
+
+
+
                                  <a t-if="slide" class="dropdown-item active" t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}">
                                     &#9492;<span class="ml-1" t-esc="slide.name"/>
                                 </a>
@@ -163,7 +161,7 @@
                         <div class="btn-group ml-1 position-static">
                             <a class="btn bg-black-25 text-white dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-search"></i></a>
                             <div class="dropdown-menu dropdown-menu-right w-100" style="right: 10px;">
-<!--                                <form class="px-3" t-attf-action="/slides/#{slug(channel)}" role="search" method="get">-->
+
                                 <form class="px-3" t-attf-action="/slides/#{slug(channel)}?channel=#{slug(channel)}" role="search" method="get">
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="search" placeholder="Search courses"/>

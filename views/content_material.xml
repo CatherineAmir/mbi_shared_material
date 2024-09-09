@@ -39,9 +39,9 @@
 			<field name="model">mbi.course_content</field>
 			<field name="arch" type="xml">
 				<tree string="Content Material">
-					<field name="channel_id"/>
+					<field name="channel_id" invisible="1"/>
 <!--					<field name="content_id"/>-->
-					<field name="name"/>
+					<field name="name" force_save="1"/>
 					<field name="slide_type"/>
 					<field name="completion_time"/>
 					<field name="sequence"/>

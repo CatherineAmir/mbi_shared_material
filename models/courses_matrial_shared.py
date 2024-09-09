@@ -144,7 +144,7 @@ class CourseMatrialShared(models.Model):
     # @api.onchange('students_ids','new_content_ids')
     # @api.depends('students_ids','new_content_ids')
     def create_slide_partner_shared(self):
-        ## print("hereee")
+        print("hereee")
 
         for r in self:
             created_partners = []
@@ -152,7 +152,7 @@ class CourseMatrialShared(models.Model):
 
             for content in r.new_content_ids:
                 search_slide = SlidePartner.search(
-                    [("slide_id", '=', content.name.id)])
+                    [("slide_id", '=', content.name.id),('channel_id', '=', content.channel_id.id)])
                 if search_slide:
                     search_slide_partner=search_slide.mapped("partner_id").ids
                 else:
@@ -161,13 +161,15 @@ class CourseMatrialShared(models.Model):
                 # print("search_slide",search_slide)
                 # print("search_slide channel_id",r.id)
                 slide_partner=self.env['slide.channel.partner'].sudo().search([('channel_id', '=', r.id)])
+                # print("slide_partner",slide_partner)
                 partner_ids=[]
                 if slide_partner:
                     partner_ids=slide_partner.mapped("partner_id")
+                    # print("partner_ids", partner_ids)
 
                 for partner in partner_ids:
-                    ## print("r.partner_ids",r.partner_ids)
-                    ## print("partner_ids",partner)
+                    # print("r.partner_ids",r.partner_ids)
+                    # print("partner_id",partner)
                     if  (search_slide_partner and partner.id not in  search_slide_partner )or not search_slide_partner:
 
                         created_partners.append({
@@ -176,9 +178,11 @@ class CourseMatrialShared(models.Model):
                             "content_id": content.id,
                             "channel_id" :r.id
                         })
-            SlidePartner.create(
-                created_partners
-            )
+                # print("created_partners",created_partners)
+                res=SlidePartner.create(
+                    created_partners
+                )
+                # print("res_read",res.read())
 
 
     # def compute_category_and_slide_ids(self):

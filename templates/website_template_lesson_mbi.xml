@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-<!--        t-attf-href="/slides/slide/#{slug(slide)}/channel=#{slug(channel)}"-->
+
     <template id="mbi_slide_main" inherit_id="website_slides.slide_main">
         <xpath expr="//div[@id='wrap']" position="replace">
 
@@ -24,6 +24,7 @@
                             <h2 class="font-weight-medium w-100">
 
                                 <a t-att-href="'/slides/%s' % (slug(channel))" class="text-white text-decoration-none" t-field="channel.name"/>
+
                                 <t t-if="channel.completed">
                                     <small><span class="badge badge-pill badge-success pull-right my-1 py-1 px-2 font-weight-normal"><i class="fa fa-check"/> Completed</span></small>
 

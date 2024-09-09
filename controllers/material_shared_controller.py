@@ -50,7 +50,7 @@ class WebsiteSlidesShared(WebsiteSlides):
                     ('partner_id', '=', request.env.user.partner_id.id),
                     ('slide_id', 'in', slides.ids)
                 ])
-                ## print("slide_partners in old", slide_partners)
+                # print("slide_partners in old", slide_partners)
                 for slide_partner in slide_partners:
                     channel_progress[slide_partner.slide_id.id].update(slide_partner.read()[0])
                     if slide_partner.slide_id.question_ids:
@@ -72,11 +72,11 @@ class WebsiteSlidesShared(WebsiteSlides):
             ## print("channel",channel.name)
             # print("channel_published_ids",channel.id)
             slides = request.env['slide.slide'].sudo().search([("channel_published_ids", 'in', [channel.id])])
-            ## print("slides in else progress",slides)
+            # print("slides in else progress",slides)
             channel_progress = dict((sid, dict()) for sid in slides.ids)
-            ## print("channel_progress",channel_progress)
+            # print("channel_progress",channel_progress)
             content_ids=request.env['mbi.course_content'].sudo().search([('name','in',slides.ids),("is_published","=",True),("channel_id","=",channel.id)])
-            ## print("channel_progress in new", channel_progress)
+            # print("channel_progress in new", channel_progress)
             if not request.env.user._is_public() and channel.is_member:
                 ## print("partner",request.env.user.partner_id)
                 ## print("slides",slides.ids)
@@ -88,9 +88,10 @@ class WebsiteSlidesShared(WebsiteSlides):
                     # ("content_id","in",content_ids.ids)
                     # ('channel_id_2', '=', channel.id),
 
-                ## print("slide_partners in new", slide_partners)
+
                 for slide_partner in slide_partners:
                     channel_progress[slide_partner.slide_id.id].update(slide_partner.read()[0])
+
                     if slide_partner.slide_id.question_ids:
                         gains = [slide_partner.slide_id.quiz_first_attempt_reward,
                                  slide_partner.slide_id.quiz_second_attempt_reward,
@@ -99,12 +100,12 @@ class WebsiteSlidesShared(WebsiteSlides):
                         channel_progress[slide_partner.slide_id.id]['quiz_gain'] = gains[
                             slide_partner.quiz_attempts_count] if slide_partner.quiz_attempts_count < len(gains) else \
                         gains[-1]
-
+                # print("channel_progress",channel_progress)
             if include_quiz:
                 quiz_info = slides._compute_quiz_info(request.env.user.partner_id, quiz_done=False)
                 for slide_id, slide_info in quiz_info.items():
                     channel_progress[slide_id].update(slide_info)
-            ## print("before chnanel_progress_return", channel_progress)
+            # print("before chnanel_progress_return", channel_progress)
             return channel_progress
 
 
@@ -325,7 +326,12 @@ class WebsiteSlidesShared(WebsiteSlides):
                 }]
         # print("values before prepare additional values the end",values)
         values = self._prepare_additional_channel_values(values, **kw)
-        # print("values  after", values)
+        # print("values_keys",values)
+        channel_progress=values["channel_progress"]
+        category_data=values["category_data"]
+
+        # print("category_data",category_data)
+
         return request.render('website_slides.course_main', values)
 
     # SLIDE.CHANNEL UTILS
@@ -393,7 +399,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         if kwargs.get('fullscreen') == '1':
             ## print("values in full screen", values)
             return request.render("website_slides.slide_fullscreen", values)
-        ## print("values in not screen", values)
+
         return request.render("website_slides.slide_main", values)
 
 # TODO
@@ -446,7 +452,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         # channel_id.compute_category_and_slide_ids()
         ## print("old",slide)
         channel_slides_ids = channel_id.slide_content_ids.ids
-        ## print("channel_slides_ids",channel_slides_ids)
+        # print("channel_slides_ids",channel_slides_ids)
         slide_index = channel_slides_ids.index(slide.id)
         ## print("slide_index",slide_index)
         previous_slide = channel_id.slide_content_ids[slide_index - 1] if slide_index > 0 else None
@@ -529,6 +535,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         try:
             channel = int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
             channel_id=request.env['slide.channel'].sudo().browse(channel)
+            print("channel_id",channel_id)
         except AccessError:
             channel_id=None
         if request.website.is_public_user():
@@ -549,7 +556,7 @@ class WebsiteSlidesShared(WebsiteSlides):
 
         self._set_completed_slide(slide,channel)
         next_slide = None
-        ## print("channel",channel)
+        # print("channel",channel)
         if next_slide_id:
             next_slide = self._fetch_slide(next_slide_id).get('slide', None)
         # print("here in redirect",next_slide)
@@ -573,9 +580,12 @@ class WebsiteSlidesShared(WebsiteSlides):
 
         return {'slide': slide}
     def _set_completed_slide(self, slide,channel):
+        # print("in set_completed_slide",slide,channel)
+        # print("in set_completed_slide",slide,channel.is_member)
         # quiz use their specific mechanism to be marked as done
         if slide.slide_type == 'quiz' or slide.question_ids:
             raise UserError(_("Slide with questions must be marked as done when submitting all good answers "))
         if slide.website_published and slide.channel_id.is_member or channel.is_member:
+            # print("in if action set complete")
             slide.action_set_completed(channel)
         return True

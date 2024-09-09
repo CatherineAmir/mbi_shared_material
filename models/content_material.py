@@ -25,12 +25,13 @@ class SlideContentPartnerRelation(models.Model):
                 r.channel_id =r.slide_id.channel_id.id
             if r.slide_id:
                 r.channel_id_2=r.slide_id.channel_id.id
-    def create(self, values):
-        res = super(SlideContentPartnerRelation, self).create(values)
-        completed = res.filtered('completed')
-        if completed:
-            completed._set_completed_callback()
-        return res
+    # @api.model
+    # def create(self, values):
+    #     res = super(SlideContentPartnerRelation, self).create(values)
+    #     completed = res.filtered('completed')
+    #     if completed:
+    #         completed._set_completed_callback()
+    #     return res
 
     # def write(self, values):
     #     res = super(SlideContentPartnerRelation, self).write(values)
@@ -47,7 +48,7 @@ class SlideContentPartnerRelation(models.Model):
                 r.slide_id=r.content_id.name.id
 
     def _set_completed_callback(self):
-        ## print("read slidde partner",self.read())
+        # print("read slidde partner",self.read())
         # print("self.channel",self.channel_id.name)
         # here is a problem
 
@@ -57,6 +58,36 @@ class SlideContentPartnerRelation(models.Model):
         ])
         for s in slide_partners:
             s._recompute_completion()
+    def _recompute_completion(self):
+        read_group_res = self.env['slide.slide.partner'].sudo().read_group(
+            ['&', '&', ('channel_id', 'in', self.mapped('channel_id').ids),
+             ('partner_id', 'in', self.mapped('partner_id').ids),
+             ('completed', '=', True),
+             ('content_id.is_published', '=', True),
+             ('content_id.active', '=', True)],
+            ['channel_id', 'partner_id'],
+            groupby = ['channel_id', 'partner_id'], lazy = False)
+        mapped_data = dict()
+        for item in read_group_res:
+            mapped_data.setdefault(item['channel_id'][0], dict())
+            mapped_data[item['channel_id'][0]][item['partner_id'][0]] = item['__count']
+
+        partner_karma = dict.fromkeys(self.mapped('partner_id').ids, 0)
+        for record in self:
+            record.completed_slides_count = mapped_data.get(record.channel_id.id, dict()).get(record.partner_id.id, 0)
+            record.completion = 100.0 if record.completed else round(
+                100.0 * record.completed_slides_count / (record.channel_id.total_slides or 1))
+            if not record.completed and record.channel_id.active and record.completed_slides_count >= record.channel_id.total_slides:
+                record.completed = True
+                partner_karma[record.partner_id.id] += record.channel_id.karma_gen_channel_finish
+
+        partner_karma = {partner_id: karma_to_add
+                         for partner_id, karma_to_add in partner_karma.items() if karma_to_add > 0}
+
+        if partner_karma:
+            users = self.env['res.users'].sudo().search([('partner_id', 'in', list(partner_karma.keys()))])
+            for user in users:
+                users.add_karma(partner_karma[user.partner_id.id])
 
 
 
@@ -82,9 +113,9 @@ class SlideSlide(models.Model):
                 r.channels_ids=r.course_content_shared_ids.mapped('channel_id').ids
 
     def action_set_completed(self,channel=None):
-        # print("in action_set_completed")
+        print("in action_set_completed")
         if channel:
-            # print("channel",channel)
+            print("channel",channel)
             if not channel.is_member:
                 raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
 
@@ -94,17 +125,12 @@ class SlideSlide(models.Model):
                 # print("error in set complete")
                 raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
         # print("in action_set_completed no error")
-        return self._action_set_completed(self.env.user.partner_id)
-
-    def _has_additional_resources(self):
-        """Sudo required for public user to know if the course has additional
-        resources that they will be able to access once a member."""
-        self.ensure_one()
-        return bool(self.sudo().slide_resource_ids)
-
+        if channel.id != self.channel_id.id:
+            return self.course_content_shared_ids.filtered(lambda x:x.channel_id.id==channel.id).action_set_completed_content(self.env.user.partner_id)
+        else:
+            return self._action_set_completed(self.env.user.partner_id)
 
     def _action_set_completed(self, target_partner):
-
 
         self_sudo = self.sudo()
         SlidePartnerSudo = self.env['slide.slide.partner'].sudo()
@@ -113,9 +139,9 @@ class SlideSlide(models.Model):
             ('partner_id', '=', target_partner.id)
         ])
         existing_sudo.write({'completed': True})
-        # print("existing_sudo",existing_sudo)
+        # print("existing_sudo of slide_slide",existing_sudo)
         new_slides = self_sudo - existing_sudo.mapped('slide_id')
-        created=SlidePartnerSudo.create([{
+        created = SlidePartnerSudo.create([{
             'slide_id': new_slide.id,
             'channel_id': new_slide.channel_id.id,
             'partner_id': target_partner.id,
@@ -123,6 +149,14 @@ class SlideSlide(models.Model):
             'completed': True} for new_slide in new_slides])
         # print("created",created)
         return True
+    def _has_additional_resources(self):
+        """Sudo required for public user to know if the course has additional
+        resources that they will be able to access once a member."""
+        self.ensure_one()
+        return bool(self.sudo().slide_resource_ids)
+
+
+
 
 
 class CourseContent(models.Model):
@@ -141,7 +175,7 @@ class CourseContent(models.Model):
     _order = 'sequence asc, is_category asc, id asc'
 
     channel_id=fields.Many2one('slide.channel',auto_join=True,index=1,string="Title")
-    is_published = fields.Boolean(default = False)
+    is_published = fields.Boolean(default = False,copy=False)
 
     name=fields.Many2one('slide.slide',required=1,index=1,)
     # name=fields.Char()
@@ -153,7 +187,7 @@ class CourseContent(models.Model):
     category_id = fields.Many2one('slide.slide', string = "Section", compute = "_compute_category_id", store = True)
     slide_ids = fields.One2many('slide.slide', "category_id", string = "Slides")
     active = fields.Boolean(default = True, tracking = 100)
-    date_published = fields.Datetime('Publish Date', readonly = True, tracking = 1)
+    date_published = fields.Datetime('Publish Date', readonly = True, tracking = 1,copy=False)
     is_new_content = fields.Boolean('Is New Content', compute = '_compute_is_new_content')
     comments_count = fields.Integer('Number of comments', compute = "_compute_comments_count")
     slide_views = fields.Integer('# of Website Views', store = True, compute = "_compute_slide_views")
@@ -183,8 +217,8 @@ class CourseContent(models.Model):
                                         groups = 'website_slides.group_website_slides_officer', copy = False)
 
 
-    auto_publish=fields.Boolean('Auto Publish', default = False)
-    datetime_publish=fields.Datetime('Datetime Published')
+    auto_publish=fields.Boolean('Auto Publish', default = False,copy=False)
+    datetime_publish=fields.Datetime('Datetime Published',copy=False)
     @api.model
     def auto_publish_material(self):
 
@@ -442,28 +476,34 @@ class CourseContent(models.Model):
             )
         return True
 
-    def copy_content_1to_2(self):
-        # todo
-        pass
+    def action_set_completed_content(self, target_partner):
 
-    def _action_set_completed(self, target_partner):
         self_sudo = self.sudo()
+        slide=self.mapped("name")
+        channel=self.mapped("channel_id")
+
+        # ('content_id', 'in', self.ids),
         SlidePartnerSudo = self.env['slide.slide.partner'].sudo()
         existing_sudo = SlidePartnerSudo.search([
-            ('content_id', 'in', self.ids),
-            ('partner_id', '=', target_partner.id)
-        ])
-        existing_sudo.write({'completed': True})
 
+            ('partner_id', '=', target_partner.id),
+            ('slide_id','in',slide.ids),
+            ("channel_id",'in',channel.ids)
+        ])
+        # print("existing_sudo of content_conteny", existing_sudo)
+        existing_sudo.write({'completed': True})
+        channel=self.mapped('channel_id')
+        # print("channel", channel)
         new_slides = self_sudo - existing_sudo.mapped('content_id')
-        SlidePartnerSudo.create([{
-            'content_id_2': new_slide.channel_id.id,
-            'channel_id': self.channel_id.id,
-            # 'channel_id_2': new_slide.channel_id.id,
+        # print("new_slides", new_slides)
+        res=SlidePartnerSudo.create([{
+            'channel_id_2': new_slide.name.channel_id.id,
+            'channel_id': channel.id,
             'partner_id': target_partner.id,
+            'slide_id':new_slide.name.id,
             'vote': 0,
             'completed': True} for new_slide in new_slides])
-        ## print("created=",SlidePartnerSudo.read())
+        # print("res_partner =",res)
         return True
 
     def _action_set_viewed(self, target_partner, quiz_attempts_inc=False):

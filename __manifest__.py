@@ -34,8 +34,9 @@
         'views/cron_job.xml',
 
         'templates/shared_material.xml',
-        'templates/website_template_lesson_mbi.xml',
+
         'templates/slides_website_channel_homepage_mbi.xml',
+        'templates/website_template_lesson_mbi.xml',
 
 
 

@@ -28,7 +28,7 @@
                                 <field name="channel_id" context="{'default_channel_id': active_id}" readonly="1"
                                        invisible="1"/>
 
-                                <field name="name"/>
+                                <field name="name" force_save="1"/>
                                 <field name="slide_type"/>
 
                                 <field name="completion_time" attrs="{'invisible': [('slide_type', '=', 'category')]}"
