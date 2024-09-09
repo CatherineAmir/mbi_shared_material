@@ -110,7 +110,7 @@ class WebsiteSlidesShared(WebsiteSlides):
 
 
     def _get_channel_slides_base_domain(self, channel):
-        print("in _get_channel_slides_base_domain",channel)
+
         """ base domain when fetching slide list data related to a given channel
 
          * website related domain, and restricted to the channel and is not a
@@ -535,7 +535,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         try:
             channel = int(referrer_url.split("channel=")[1].split("?")[0].split("-")[1])
             channel_id=request.env['slide.channel'].sudo().browse(channel)
-            print("channel_id",channel_id)
+            # print("channel_id",channel_id)
         except AccessError:
             channel_id=None
         if request.website.is_public_user():
