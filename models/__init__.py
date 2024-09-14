@@ -2,3 +2,4 @@
 
 from . import content_material
 from . import courses_matrial_shared
+from . import admission
