@@ -25,19 +25,6 @@ class SlideContentPartnerRelation(models.Model):
                 r.channel_id =r.slide_id.channel_id.id
             if r.slide_id:
                 r.channel_id_2=r.slide_id.channel_id.id
-    # @api.model
-    # def create(self, values):
-    #     res = super(SlideContentPartnerRelation, self).create(values)
-    #     completed = res.filtered('completed')
-    #     if completed:
-    #         completed._set_completed_callback()
-    #     return res
-
-    # def write(self, values):
-    #     res = super(SlideContentPartnerRelation, self).write(values)
-    #     if values.get('completed'):
-    #         self._set_completed_callback()
-    #     return res
 
 
     @api.depends('content_id')
@@ -48,9 +35,9 @@ class SlideContentPartnerRelation(models.Model):
                 r.slide_id=r.content_id.name.id
 
     def _set_completed_callback(self):
-        # print("read slidde partner",self.read())
-        # print("self.channel",self.channel_id.name)
-        # here is a problem
+
+
+
 
         slide_partners=self.env['slide.channel.partner'].search([
             ('channel_id', 'in', self.channel_id.ids),
@@ -100,22 +87,22 @@ class SlideSlide(models.Model):
     @api.depends('course_content_shared_ids','course_content_shared_ids.is_published')
     def _set_channels_ids(self):
         for r in self:
-            ## print("r.NAME",r.name)
+
             if r.course_content_shared_ids:
-                ## print("r.course_content_shared_ids",r.course_content_shared_ids)
-                ## print("r.course_content_shared_ids",r.course_content_shared_ids.filtered(lambda m :m.is_published is True))
+
+
                 channel_ids_published=r.course_content_shared_ids.filtered(lambda m :m.is_published)
                 if channel_ids_published:
                     r.channel_published_ids=channel_ids_published.mapped('channel_id').ids
                 else:
                     r.channel_published_ids=False
-                ## print("channel_published_ids",r.channel_published_ids)
+
                 r.channels_ids=r.course_content_shared_ids.mapped('channel_id').ids
 
     def action_set_completed(self,channel=None):
-        print("in action_set_completed")
+
         if channel:
-            print("channel",channel)
+
             if not channel.is_member:
                 raise UserError(_('You cannot mark a slide as completed if you are not among its members.'))
 
@@ -139,7 +126,7 @@ class SlideSlide(models.Model):
             ('partner_id', '=', target_partner.id)
         ])
         existing_sudo.write({'completed': True})
-        # print("existing_sudo of slide_slide",existing_sudo)
+
         new_slides = self_sudo - existing_sudo.mapped('slide_id')
         created = SlidePartnerSudo.create([{
             'slide_id': new_slide.id,
@@ -147,7 +134,7 @@ class SlideSlide(models.Model):
             'partner_id': target_partner.id,
             'vote': 0,
             'completed': True} for new_slide in new_slides])
-        # print("created",created)
+
         return True
     def _has_additional_resources(self):
         """Sudo required for public user to know if the course has additional
@@ -173,11 +160,12 @@ class CourseContent(models.Model):
         'latest': 'date_published desc',
     }
     _order = 'sequence asc, is_category asc, id asc'
+    _rec_name = 'name'
 
     channel_id=fields.Many2one('slide.channel',auto_join=True,index=1,string="Title")
     is_published = fields.Boolean(default = False,copy=False)
 
-    name=fields.Many2one('slide.slide',required=1,index=1,)
+    name=fields.Many2one('slide.slide',required=1,index=1,store=True)
     # name=fields.Char()
     slide_type=fields.Selection(related='name.slide_type',store=1)
     completion_time=fields.Float(related='name.completion_time',store=1)
@@ -235,8 +223,7 @@ class CourseContent(models.Model):
         content_published=ContentMaterialSUDO.sudo().search(domain)
         # print("content_published",content_published)
         for c in content_published:
-            # print("c.name",c.name)
-            # c.name.is_published=True
+
             c.is_published=True
 
 
@@ -300,7 +287,7 @@ class CourseContent(models.Model):
             content.likes = mapped_data_like.get(content.id, 0)
             content.dislikes = mapped_data_dislike.get(content.id, 0)
     #
-    @api.depends('slide_ids.sequence', 'slide_ids.slide_type', 'slide_ids.is_published', 'slide_ids.is_category')
+    @api.depends('slide_ids.sequence', 'slide_ids.slide_type', 'slide_ids', 'slide_ids.is_category')
     def _compute_slides_statistics(self):
         # Do not use dict.fromkeys(self.ids, dict()) otherwise it will use the same dictionnary for all keys.
         # Therefore, when updating the dict of one key, it updates the dict of all keys.

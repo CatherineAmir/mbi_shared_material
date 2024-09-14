@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.actions.server" id="server_set_course_content">
+              <field name="name">Set Course Content</field>
+              <field name="binding_model_id" ref="website_slides.model_slide_channel"/>
+              <field name="model_id" ref="website_slides.model_slide_channel"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">action = model.regenerate_slides_name()</field>
+        </record>
+
+
+    </data>
+</odoo>

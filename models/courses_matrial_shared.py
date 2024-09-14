@@ -5,6 +5,29 @@ class CourseMatrialShared(models.Model):
     _inherit = "slide.channel"
     new_content_ids = fields.One2many('mbi.course_content', 'channel_id', string = 'Matrials', copy=True)
 
+    course_copied_from=fields.Many2one('slide.channel',string='Copied From')
+
+    @api.depends("new_content_ids.name")
+    @api.onchange("new_content_ids")
+    def regenerate_slides_name(self):
+        for r in self:
+            if r.course_copied_from and r.new_content_ids:
+                if list(r.new_content_ids.mapped('name'))[0]==False:
+                    for i in range(0,len(r.r.course_copied_from.slide_ids)):
+                        r.new_content_ids[i].name=r.course_copied_from.slide_ids[i].id
+            elif r.course_copied_from:
+                if len(r.course_copied_from.slide_ids):
+                    vals_created=[]
+                    for slide in r.course_copied_from.slide_ids:
+                        vals_created.append({
+                        'channel_id':r.id,
+                        'name':slide.id,
+                        'is_category':slide.is_category,
+                        'sequence':slide.sequence,
+
+                        })
+                    vals=self.env['mbi.course_content'].create(vals_created)
+
     @api.depends('semester', 'name')
     def get_students_counts(self):
         for r in self:
@@ -24,7 +47,7 @@ class CourseMatrialShared(models.Model):
 
     def _compute_new_content_ids(self):
         for r in self:
-            ## print("herrree",r.new_content_ids)
+
             for content in r.new_content_ids:
                 ## print("content.name",content.name.name)
                 ## print("content.id",r.id)
@@ -134,9 +157,6 @@ class CourseMatrialShared(models.Model):
                     'is_category':slide.is_category,
                     'sequence':slide.sequence,
 
-
-
-
                     })
                 vals=self.env['mbi.course_content'].create(vals_created)
                 # print("vals",vals)
@@ -144,7 +164,7 @@ class CourseMatrialShared(models.Model):
     # @api.onchange('students_ids','new_content_ids')
     # @api.depends('students_ids','new_content_ids')
     def create_slide_partner_shared(self):
-        print("hereee")
+
 
         for r in self:
             created_partners = []
@@ -165,7 +185,7 @@ class CourseMatrialShared(models.Model):
                 partner_ids=[]
                 if slide_partner:
                     partner_ids=slide_partner.mapped("partner_id")
-                    # print("partner_ids", partner_ids)
+
 
                 for partner in partner_ids:
                     # print("r.partner_ids",r.partner_ids)

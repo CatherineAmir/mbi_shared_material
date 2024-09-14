@@ -37,6 +37,7 @@
 
         'templates/slides_website_channel_homepage_mbi.xml',
         'templates/website_template_lesson_mbi.xml',
+        'views/server_actions.xml',
 
 
 
