@@ -9,13 +9,58 @@ class CourseMatrialShared(models.Model):
 
     @api.depends("new_content_ids.name")
     @api.onchange("new_content_ids")
-    def regenerate_slides_name(self):
+    def regenerate_slides_name(self,flag=1):
         for r in self:
             if r.course_copied_from and r.new_content_ids:
-                if list(r.new_content_ids.mapped('name'))[0]==False:
-                    for i in range(0,len(r.r.course_copied_from.slide_ids)):
-                        r.new_content_ids[i].name=r.course_copied_from.slide_ids[i].id
-            elif r.course_copied_from:
+                # print( if not r.new_content_ids.mapped('name'):)
+                if  not list(r.new_content_ids.mapped('name')):
+                    vals_created=[]
+                    for i in range(0,len(r.course_copied_from.slide_ids)):
+
+                        try:
+                            r.new_content_ids[i].name=r.course_copied_from.slide_ids[i].id
+                        except IndexError as e:
+                            vals_created.append({
+                                'channel_id': r.id,
+                                'name': r.course_copied_from.slide_ids[i].id,
+                                'is_category': r.course_copied_from.slide_ids[i].is_category,
+                                'sequence': r.course_copied_from.slide_ids[i].sequence,
+
+                            })
+                        if vals_created:
+                            vals = self.env['mbi.course_content'].create(vals_created)
+
+                else:
+                    if len(r.new_content_ids)==len(r.course_copied_from.slide_ids):
+                        pass
+                    else:
+                        if flag:
+                            vals_created=[]
+                            if len(r.course_copied_from.slide_ids)>len(r.new_content_ids):
+                                for i in range(0, len(r.course_copied_from.slide_ids)):
+
+                                    try:
+                                        r.new_content_ids[i].write({
+                                            "name" : r.course_copied_from.slide_ids[i].id,
+                                            'channel_id': r.id,
+                                            'is_category': r.course_copied_from.slide_ids[i].is_category,
+                                            'sequence': r.course_copied_from.slide_ids[i].sequence,
+                                        })
+                                    except IndexError as e:
+                                        vals_created.append({
+                                        'channel_id': r.id,
+                                        'name': r.course_copied_from.slide_ids[i].id,
+                                        'is_category': r.course_copied_from.slide_ids[i].is_category,
+                                        'sequence': r.course_copied_from.slide_ids[i].sequence,
+
+                                        })
+                                    if vals_created:
+                                        vals = self.env['mbi.course_content'].create(vals_created)
+
+
+
+            elif r.course_copied_from and flag:
+
                 if len(r.course_copied_from.slide_ids):
                     vals_created=[]
                     for slide in r.course_copied_from.slide_ids:

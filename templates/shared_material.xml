@@ -361,7 +361,7 @@
                     t-att-data-is-member="is_member"
                     t-att-data-session-answers="session_answers">
                     <span class="ml-3">
-                        <span> Completed<t t-esc="slide_completed"/></span>
+<!--                        <span> Completed<t t-esc="slide_completed"/></span>-->
                         <i t-if="slide_completed and is_member" class="o_wslides_slide_completed fa fa-check fa-fw text-success" t-att-data-slide-id="slide.id"/>
                         <i t-if="not slide_completed and is_member" class="fa fa-circle-thin fa-fw" t-att-data-slide-id="slide.id"/>
                     </span>

@@ -341,13 +341,13 @@ class CourseContent(models.Model):
 
 
 
-    @api.onchange('channel_id')
-    def slide_domain(self):
-        pass
-        return{
-            'domain':{'name':
-                [('parent_course','=',self.channel_id.course_name.id)]}
-        }
+    # @api.onchange('channel_id')
+    # def slide_domain(self):
+    #     pass
+    #     return{
+    #         'domain':{'name':
+    #             [('parent_course','=',self.channel_id.course_name.id)]}
+    #     }
 
 
 

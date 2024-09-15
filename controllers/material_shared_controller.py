@@ -154,6 +154,12 @@ class WebsiteSlidesShared(WebsiteSlides):
         """
         if not channel.can_access_from_current_website():
             raise werkzeug.exceptions.NotFound()
+        try:
+            channel.sudo().regenerate_slides_name(flag=0)
+
+        except Exception as e:
+
+            pass
 
         domain = self._get_channel_slides_base_domain(channel)
         ## print("in def channel customise",domain)
