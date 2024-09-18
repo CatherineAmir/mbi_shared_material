@@ -2,7 +2,7 @@ from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 import logging
 _logger = logging.getLogger(__name__)
-
+import time
 class Admission(models.Model):
     _inherit = "mbi.admission"
 
@@ -18,10 +18,26 @@ class Admission(models.Model):
 
                 course.create_slide_partner(student_program_id.student.partner_id)
             except Exception as e:
-                # _logger.error("exception in course %s",e)
-                raise ValidationError("exception in course create {}".format(e))
-                # course.get_students_counts()
-                # course.create_slide_partner_shared()
+                time.sleep(3)
+
+
+                try:
+                    course.get_students_counts()
+                    course.create_slide_partner_shared()
+                except Exception as e:
+                    time.sleep(5)
+                    try:
+                        course.get_students_counts()
+                        course.create_slide_partner_shared()
+                    except Exception as e:
+                        time.sleep(7)
+                        try:
+                            course.get_students_counts()
+                            course.create_slide_partner_shared()
+                        except Exception as e:
+
+                            raise ValidationError("exception in course create {}".format(e))
+
 
 
             #

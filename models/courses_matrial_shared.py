@@ -208,8 +208,9 @@ class CourseMatrialShared(models.Model):
 
     def create_slide_partner(self,partner):
         created_partner_material = []
-        SlidePartner = self.env["slide.slide.partner"].sudo()
+
         for content in self.new_content_ids:
+            SlidePartner = self.env["slide.slide.partner"].sudo()
             search_slide = SlidePartner.search(
                 [("slide_id", '=', content.name.id),
                  ('channel_id', '=', content.channel_id.id),
