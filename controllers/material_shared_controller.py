@@ -403,7 +403,7 @@ class WebsiteSlidesShared(WebsiteSlides):
         values['signup_allowed'] = request.env['res.users'].sudo()._get_signup_invitation_scope() == 'b2c'
 
         if kwargs.get('fullscreen') == '1':
-            ## print("values in full screen", values)
+            # print("values in full screen", values)
             return request.render("website_slides.slide_fullscreen", values)
 
         return request.render("website_slides.slide_main", values)

@@ -206,6 +206,25 @@ class CourseMatrialShared(models.Model):
                 vals=self.env['mbi.course_content'].create(vals_created)
                 # print("vals",vals)
 
+    def create_slide_partner(self,partner):
+        created_partner_material = []
+        SlidePartner = self.env["slide.slide.partner"].sudo()
+        for content in self.new_content_ids:
+            search_slide = SlidePartner.search(
+                [("slide_id", '=', content.name.id),
+                 ('channel_id', '=', content.channel_id.id),
+                 ("partner_id",'=',partner.id)])
+            if not search_slide:
+                created_partner_material.append({
+                    "slide_id": content.name.id,
+                    "partner_id": partner.id,
+                    "content_id": content.id,
+                    "channel_id": self.id
+                })
+        SlidePartner.create(created_partner_material)
+
+
+
     # @api.onchange('students_ids','new_content_ids')
     # @api.depends('students_ids','new_content_ids')
     def create_slide_partner_shared(self):

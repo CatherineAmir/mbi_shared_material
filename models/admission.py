@@ -1,6 +1,7 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class Admission(models.Model):
     _inherit = "mbi.admission"
@@ -11,9 +12,20 @@ class Admission(models.Model):
         program_courses = student_program_id.courses
         # contents = []
         for course in program_courses:
-            course.get_students_counts()
-            course.create_slide_partner_shared()
+            try:
+                course.students_ids = [(4, student_program_id.student.id)]
+
+
+                course.create_slide_partner(student_program_id.student.partner_id)
+            except Exception as e:
+                # _logger.error("exception in course %s",e)
+                raise ValidationError("exception in course create {}".format(e))
+                # course.get_students_counts()
+                # course.create_slide_partner_shared()
+
+
             #
+
             # try:
 
                 # SlidePartner = self.env["slide.slide.partner"].sudo()
