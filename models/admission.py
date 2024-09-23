@@ -13,8 +13,8 @@ class Admission(models.Model):
         # contents = []
         for course in program_courses:
             try:
-                course.students_ids = [(4, student_program_id.student.id)]
-
+                course.with_context(prefetch_fields=False).students_ids = [(4, student_program_id.student.id)]
+                course.regenerate_slides_name()
 
                 course.create_slide_partner(student_program_id.student.partner_id)
             except Exception as e:
@@ -22,22 +22,33 @@ class Admission(models.Model):
 
 
                 try:
-                    course.get_students_counts()
-                    course.create_slide_partner_shared()
+                    course.with_context(prefetch_fields=False).students_ids = [(4, student_program_id.student.id)]
                 except Exception as e:
-                    time.sleep(5)
-                    try:
-                        course.get_students_counts()
-                        course.create_slide_partner_shared()
-                    except Exception as e:
-                        time.sleep(7)
-                        try:
-                            course.get_students_counts()
-                            course.create_slide_partner_shared()
-                        except Exception as e:
+                    raise ValidationError("exception in course create1 {}".format(e))
+                try:
+                    course.regenerate_slides_name()
+                except Exception as e:
+                    raise ValidationError("exception in course create2 {}".format(e))
+                try:
+                    course.create_slide_partner(student_program_id.student.partner_id)
 
-                            raise ValidationError("exception in course create {}".format(e))
-
+                except Exception as e:
+                    raise ValidationError("exception in course create3 {}".format(e))
+                    # time.sleep(5)
+                    # try:
+                    #     course.students_ids = [(4, student_program_id.student.id)]
+                    #     course.regenerate_slides_name()
+                    #     course.create_slide_partner(student_program_id.student.partner_id)
+                    # except Exception as e:
+                    #     time.sleep(7)
+                    #     try:
+                    #         course.students_ids = [(4, student_program_id.student.id)]
+                    #         course.regenerate_slides_name()
+                    #         course.create_slide_partner(student_program_id.student.partner_id)
+                    #     except Exception as e:
+                    #
+                    #         raise ValidationError("exception in course create {}".format(e))
+                    #
 
 
             #
