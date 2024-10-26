@@ -120,8 +120,8 @@ class WebsiteSlidesShared(WebsiteSlides):
            current user is the one that uploaded it;
          * if not publisher and public: published;
         """
-        if channel.new_content_ids:
-            ## print("channel",channel)
+        if channel.sudo().new_content_ids:
+            ## prisunt("channel",channel)
             ## print("c.new_content_ids",channel.new_content_ids)
             slides=channel.new_content_ids.sudo().filtered(lambda x:x.is_published).mapped('name')
             ## print("slides", slides)

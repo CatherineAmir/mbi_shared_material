@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_slides_content,access_slides_content,model_mbi_course_content,,1,1,1,1
+access_slides_content_portal,access_slides_content_portal,model_mbi_course_content,base.group_portal,1,0,0,0
 access_slides_portal,access_slides_portal,website_slides.model_slide_slide,base.group_portal,1,1,0,0
