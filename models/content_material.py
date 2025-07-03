@@ -186,17 +186,17 @@ class CourseContent(models.Model):
     likes = fields.Integer('Likes', compute='_compute_like_info', store=True, compute_sudo=False)
     dislikes = fields.Integer('Dislikes', compute='_compute_like_info', store=True, compute_sudo=False)
     user_vote = fields.Integer('User vote', compute='_compute_user_membership_id', compute_sudo=False)
-    embed_code = fields.Text('Embed Code', readonly = True, related='name.embed_code')
+    embed_code = fields.Html('Embed Code', readonly = True, related='name.embed_code')
 
-    datas = fields.Binary('Content', attachment = True,related='name.datas')
+    datas = fields.Binary('Content', attachment = True,related='name.binary_content')
     url = fields.Char('Document URL', help = "Youtube or Google Document URL",related='name.url')
-    document_id = fields.Char('Document ID', help = "Youtube or Google Document ID",related='name.document_id')
-    link_ids = fields.One2many('slide.slide.link', 'slide_id', string = "External URL for this slide",related='name.link_ids')
+    # document_id = fields.Char('Document ID', help = "Youtube or Google Document ID",related='name.document_id')
+    # link_ids = fields.One2many('slide.slide.link', 'slide_id', string = "External URL for this slide",related='name.link_ids')
     slide_resource_ids = fields.One2many('slide.slide.resource', 'slide_id',
                                          string = "Additional Resource for this slide",related='name.slide_resource_ids')
     slide_resource_downloadable = fields.Boolean('Allow Download', default = True,
                                                  help = "Allow the user to download the content of the slide.",related='name.slide_resource_downloadable')
-    mime_type = fields.Char('Mime-type',related='name.mime_type')
+    # mime_type = fields.Char('Mime-type',related='name.mime_type')
     html_content = fields.Html("HTML Content", help = "Custom HTML content for slides of type 'Web Page'.",
                                translate = True, sanitize_attributes = False, sanitize_form = False,related='name.html_content')
     # website

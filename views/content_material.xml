@@ -20,7 +20,9 @@
 
                                 <field name="is_published" widget="boolean_toggle"/>
                                  <field name="auto_publish" string="Auto Published" widget="boolean_toggle"/>
-                                <field name="datetime_publish" attrs="{'invisible':[('auto_publish','=',False)],'required':[('auto_publish','=',True)]}"/>
+                                <field name="datetime_publish"
+                                       invisible="not auto_publish" required="auto_publish"/>
+
                                 <field name="completion_time"   widget="float_time"/>
                             </group>
                             <group>

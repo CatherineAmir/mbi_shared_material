@@ -20,14 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','website_slides','mbi','website','website_profile','web_tour','web',"web_notify"],
+    'depends': ['base', 'website_slides', 'mbi', 'website', 'website_profile', 'web_tour', 'web', "web_notify"],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'security/record_rules.xml',
 
-        'views/front_end_assets.xml',
+        # 'views/front_end_assets.xml',
         'views/content_material.xml',
         'views/slide_channel_courses_material.xml',
         'views/slide_slide.xml',
@@ -39,13 +39,15 @@
         'templates/website_template_lesson_mbi.xml',
         'views/server_actions.xml',
 
-
-
-
     ],
+    "assets": {
+        'web.assets_frontend': [
+            'mbi_shared_material/static/src/js/courses_call_backs.js'
+        ]
+    },
     # only loaded in demonstration mode
 
-    'installable':True,
-    'application':False,
+    'installable': True,
+    'application': False,
     'images': ['static/description/icon.png'],
 }

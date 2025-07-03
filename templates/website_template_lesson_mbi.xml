@@ -150,9 +150,9 @@
     </template>
 
         <template id="mbi_slide_content_detailed" inherit_id="website_slides.slide_content_detailed">
-        <xpath expr="//t[@t-set='is_training_channel']" position="replace">
-             <t t-set="is_training_channel" t-value="channel.channel_type == 'training'"/>
-        </xpath>
+<!--        <xpath expr="//t[@t-set='is_training_channel']" position="replace">-->
+<!--             <t t-set="is_training_channel" t-value="channel.channel_type == 'training'"/>-->
+<!--        </xpath>-->
 
             <xpath expr="//div[hasclass('align-items-center')]" position="replace">
                 <div class="row align-items-center my-3">
